@@ -37,16 +37,18 @@ def add_watermark(img_path, out_path, text, font_size, color, position):
     img.save(out_path)
 
 def main():
-    parser = argparse.ArgumentParser(description="图片批量水印工具")
-    parser.add_argument("dir", help="图片文件夹路径")
-    parser.add_argument("--font_size", type=int, default=32, help="字体大小")
-    parser.add_argument("--color", type=str, default="white", help="字体颜色")
-    parser.add_argument("--position", type=str, choices=["left_top", "center", "right_bottom"], default="right_bottom", help="水印位置")
-    args = parser.parse_args()
+    print("欢迎使用图片批量水印工具！")
+    src_dir = input("请输入图片文件夹路径: ").strip()
+    font_size = input("请输入字体大小（默认32）: ").strip()
+    font_size = int(font_size) if font_size else 32
+    color = input("请输入字体颜色（如 white、yellow，默认white）: ").strip()
+    color = color if color else "white"
+    position = input("请输入水印位置（left_top, center, right_bottom，默认right_bottom）: ").strip()
+    position = position if position in ["left_top", "center", "right_bottom"] else "right_bottom"
 
-    src_dir = args.dir
     out_dir = os.path.join(src_dir, os.path.basename(src_dir) + "_watermark")
-    os.makedirs(out_dir, exist_ok=True)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
 
     for fname in os.listdir(src_dir):
         fpath = os.path.join(src_dir, fname)
@@ -54,8 +56,9 @@ def main():
             date = get_exif_date(fpath)
             if date:
                 out_path = os.path.join(out_dir, fname)
-                add_watermark(fpath, out_path, date, args.font_size, args.color, args.position)
-                print(f"已处理: {fname}")
+                add_watermark(fpath, out_path, date, font_size, color, position)
+                print(f"已处理: {fname} -> {out_path}")
+    print(f"所有图片已处理完毕，水印图片保存在: {out_dir}")
 
 if __name__ == "__main__":
     main()
